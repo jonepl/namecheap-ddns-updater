@@ -59,6 +59,9 @@ The script will:
 * This container does not run persistently — it simply executes the script and exits.
 * It's intended for mock testing only (not for production DDNS updates).
 * If you plan to automate this on your home server, use a cron job or systemd service instead.
+* Automatic log rotation is built-in:
+
+  If the log file (namecheap-ddns.log) grows beyond 1MB, it will be backed up to namecheap-ddns.log.bak and a new log file will be created. This ensures long-running setups won’t accumulate unbounded log files.
 
 
 ## 🛡️ Disclaimer

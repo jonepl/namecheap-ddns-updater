@@ -1,8 +1,10 @@
 #!/bin/bash
 ENV_FILE="$(dirname "$0")/.env"
 FQDN="$SUBDOMAIN.$DOMAIN"
-LOG_FILE="$(dirname "$0")/namecheap-ddns.log"
 WILDCARD_IP="143.244.220.150"
+MAX_LOG_SIZE=1048576  # 1MB in bytes
+LOG_FILE="$(dirname "$0")/namecheap-ddns.log"
+LOG_BACKUP="${LOG_FILE}.bak"
 
 ip=""
 old_ip=""
@@ -50,6 +52,17 @@ create_log_file() {
     log_message "INFO" "Log file created at $LOG_FILE"
   fi
 }
+
+rotate_log_file_if_needed() {
+  if [ -f "$LOG_FILE" ] && [ "$(stat -c%s "$LOG_FILE")" -ge "$MAX_LOG_SIZE" ]; then
+    log_message "INFO" "Log file size exceeds $MAX_LOG_SIZE bytes. Rotating log file..."
+    [ -f "$LOG_BACKUP" ] && rm "$LOG_BACKUP"
+    cp "$LOG_FILE" "$LOG_BACKUP"
+    : > "$LOG_FILE"
+    log_message "INFO" "Log rotated: $LOG_BACKUP created, $LOG_FILE cleared."
+  fi
+}
+
 
 set_fqdn() {
   FQDN="$SUBDOMAIN.$DOMAIN"
@@ -123,6 +136,8 @@ update_fqdn_ip() {
 }
 
 create_log_file
+
+rotate_log_file_if_needed
 
 initialize_env_vars
 
