@@ -1,0 +1,11 @@
+[Unit]
+Description=Namecheap DDNS Updater
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/namecheap-ddns.sh
+EnvironmentFile=/etc/namecheap-ddns.env
+StandardOutput=journal
+StandardError=journal

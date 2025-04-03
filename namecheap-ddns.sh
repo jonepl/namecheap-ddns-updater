@@ -3,8 +3,9 @@ ENV_FILE="$(dirname "$0")/.env"
 FQDN="$SUBDOMAIN.$DOMAIN"
 WILDCARD_IP="143.244.220.150"
 MAX_LOG_SIZE=1048576  # 1MB in bytes
-LOG_FILE="$(dirname "$0")/namecheap-ddns.log"
-LOG_BACKUP="${LOG_FILE}.bak"
+LOG_DIR="/var/log/vpn"
+LOG_FILE="$LOG_DIR/namecheap-ddns.log"
+LOG_BACKUP="$LOG_DIR/namecheap-ddns.log.bak"
 
 ip=""
 old_ip=""
@@ -116,7 +117,7 @@ compare_ips() {
 }
 
 update_fqdn_ip() {
-  url="https://dynamicdns.park-your-domain.com/update?host=${SUBDOMAIN}&domain=${DOMAIN}&password=${PASSWORD}&ip=${ip}"
+  url="https://dynamicdns.park-your-domain.com/update?host=${SUBDOMAIN}&domain=${DOMAIN}&password=*****&ip=${ip}"
   
   if [[ "$DRY_RUN" == "true" ]]; then
       log_message "INFO" "[DRY RUN] Would have updated $FQDN to $ip using URL: $url"
