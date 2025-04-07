@@ -48,8 +48,24 @@ verify_env_vars() {
 }
 
 create_log_file() {
+  # Ensure the log directory exists
+  if [[ ! -d "$LOG_DIR" ]]; then
+    mkdir -p "$LOG_DIR"
+    if [[ $? -ne 0 ]]; then
+      log_message "ERROR" "Failed to create log directory at $LOG_DIR. Check permissions."
+      exit 1
+    fi
+    log_message "INFO" "Log directory created at $LOG_DIR"
+  fi
+
   if [[ ! -f "$LOG_FILE" ]]; then
     touch "$LOG_FILE"
+
+    if [[ $? -ne 0 ]]; then
+      log_message "ERROR" "Failed to create log file at $LOG_FILE. Check permissions."
+      exit 1
+    fi
+
     log_message "INFO" "Log file created at $LOG_FILE"
   fi
 }
@@ -117,10 +133,10 @@ compare_ips() {
 }
 
 update_fqdn_ip() {
-  url="https://dynamicdns.park-your-domain.com/update?host=${SUBDOMAIN}&domain=${DOMAIN}&password=*****&ip=${ip}"
+  url="https://dynamicdns.park-your-domain.com/update?host=${SUBDOMAIN}&domain=${DOMAIN}&password=${PASSWORD}&ip=${ip}"
   
   if [[ "$DRY_RUN" == "true" ]]; then
-      log_message "INFO" "[DRY RUN] Would have updated $FQDN to $ip using URL: $url"
+      log_message "INFO" "[DRY RUN] Would have updated $FQDN to $ip."
       return
   fi
   
